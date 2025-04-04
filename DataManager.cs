@@ -9,18 +9,18 @@ namespace Modules.Data
     [UsedImplicitly]
     public sealed class DataManager
     {
-        private readonly DataSettings dataSettings;
+        private readonly DataConfigSo dataConfigSo;
 
-        public DataManager(DataSettings dataSettings)
+        public DataManager(DataConfigSo dataConfigSo)
         {
-            this.dataSettings = dataSettings;
+            this.dataConfigSo = dataConfigSo;
         }
 
         public void Save(string key, object data)
         {
             string json = default;
 
-            switch (dataSettings.JsonType)
+            switch (dataConfigSo.JsonType)
             {
                 case JsonType.Newtonsoft:
                     json = JsonConvert.SerializeObject(data);
@@ -30,14 +30,14 @@ namespace Modules.Data
                     break;
             }
           
-            if (dataSettings.ConvertToByteCode)
+            if (dataConfigSo.ConvertToByteCode)
             {
                 byte[] bytes = Encoding.Unicode.GetBytes(json);
                 PlayerPrefs.SetString(key, Convert.ToBase64String(bytes));
                 return;
             }
 
-            if (dataSettings.LogSaveEvent)
+            if (dataConfigSo.LogSaveEvent)
             {
                 Debug.Log($"SAVE {json}");
             }
@@ -72,7 +72,7 @@ namespace Modules.Data
             if (PlayerPrefs.HasKey(key))
             {
                 string json;
-                if (dataSettings.ConvertToByteCode)
+                if (dataConfigSo.ConvertToByteCode)
                 {
                     try
                     {
@@ -89,7 +89,7 @@ namespace Modules.Data
                     json = PlayerPrefs.GetString(key);
                 }
                 
-                switch (dataSettings.JsonType)
+                switch (dataConfigSo.JsonType)
                 {
                     case JsonType.Newtonsoft:
                         data = JsonConvert.DeserializeObject(json, type);
@@ -99,7 +99,7 @@ namespace Modules.Data
                         break;
                 }
                 
-                if (dataSettings.LogSaveEvent)
+                if (dataConfigSo.LogSaveEvent)
                 {
                     Debug.Log(json);
                 }
